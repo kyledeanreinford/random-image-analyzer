@@ -1,33 +1,82 @@
-/**
- * Welcome to Cloudflare Workers!
- *
- * This is a template for a Scheduled Worker: a Worker that can run on a
- * configurable interval:
- * https://developers.cloudflare.com/workers/platform/triggers/cron-triggers/
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Run `curl "http://localhost:8787/__scheduled?cron=*+*+*+*+*"` to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.toml`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import OpenAI from "openai";
+
+type NasaResponse = {
+	copyright: string,
+	date: string,
+	explanation: string,
+	hdurl: string,
+	media_type: string,
+	service_version: string,
+	title: string,
+	url: string,
+}
+
+type PhotoDetails = {
+	title: string,
+	url: string,
+	date: Date,
+	copyright: string
+}
+
+const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails): Promise<void> => {
+	const keyString = photoDetails.title + "" + photoDetails.date.toString() + "" + "" + photoDetails.copyright
+	const existing = await store.get(keyString)
+	if(existing) {
+		console.error("this item already exists in the archive")
+		return
+	} else {
+		await store.put(keyString, photoDetails.url)
+		console.log("successfully added to archive")
+	}
+}
 
 export default {
-	// The scheduled handler is invoked at the interval set in our wrangler.toml's
-	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
-		// A Cron Trigger can make requests to other endpoints on the Internet,
-		// publish to a Queue, query a D1 Database, and much more.
-		//
-		// We'll keep it simple and make an API call to a Cloudflare API:
-		let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
-		let wasSuccessful = resp.ok ? 'success' : 'fail';
+		let result = await fetch(`https://api.nasa.gov/planetary/apod?count=1&api_key=${env.NASA_API_KEY}`);
+		if(!result.ok) {
+			console.log("failed to fetch data")
+		}
 
-		// You could store this result in KV, write to a D1 Database, or publish to a Queue.
-		// In this template, we'll just log the result:
-		console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
+		const json = await result.json() as NasaResponse[]
+		if(json[0].media_type !== "image") return
+
+		const url: string = json[0].url
+		const copyright: string = json[0].copyright
+		const date: string = json[0].date
+		const title: string = json[0].title
+
+		const openAi = new OpenAI({ apiKey: env.OPEN_API_KEY });
+		const openAiResponse = await openAi.chat.completions.create({
+			model: "gpt-4o-mini",
+			messages: [
+				{
+					role: "user",
+					content: [
+						{ type: "text", text: "output this photo's characteristics and keywords in a brief, comma separated list" },
+						{
+							type: "image_url",
+							image_url: {
+								"url": url,
+							},
+						},
+					],
+				},
+			],
+		});
+
+		if(!openAiResponse.choices[0].message.content) {
+			console.log("no openAiResponse")
+			return
+		}
+
+		await savePhotoDetails(env.PHOTO_DETAILS, { title, url, date: new Date(date), copyright })
+
+		const characteristics = openAiResponse.choices[0].message.content!.trim().split(",")
+
+		characteristics.forEach((characteristic) => {
+			console.log(characteristic)
+		})
+
+		console.log(`trigger fired at ${event.cron}`);
 	},
 } satisfies ExportedHandler<Env>;
