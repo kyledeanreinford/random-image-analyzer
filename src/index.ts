@@ -31,7 +31,29 @@ const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails):
 }
 
 export default {
-	async scheduled(event, env, ctx): Promise<void> {
+	async fetch(_: Request, env: Env): Promise<Response> {
+		let latestMaybe: string = ""
+		const list = await env.PHOTO_DETAILS.list()
+		list.keys.map(key => {
+			latestMaybe = key.name
+		});
+
+		const url = await env.PHOTO_DETAILS.get(latestMaybe)
+
+		const html = `<!DOCTYPE html>
+    <body>
+      <h1>Latest Image</h1>
+      <img src="${url}" alt={'possible latest image'}>
+    </body>`;
+
+		return new Response(html, {
+			headers: {
+				"content-type": "text/html;charset=UTF-8",
+			},
+		});
+	},
+
+	async scheduled(event: ScheduledController, env: Env, _: ExecutionContext): Promise<void> {
 		let result = await fetch(`https://api.nasa.gov/planetary/apod?count=1&api_key=${env.NASA_API_KEY}`);
 		if(!result.ok) {
 			console.log("failed to fetch data")
