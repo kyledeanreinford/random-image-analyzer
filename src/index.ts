@@ -19,7 +19,7 @@ type PhotoDetails = {
 }
 
 const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails): Promise<void> => {
-	const keyString = photoDetails.title + "" + photoDetails.date.toString() + "" + "" + photoDetails.copyright
+	const keyString = photoDetails.title + " " + photoDetails.date.toString() + " " + photoDetails.copyright
 	const existing = await store.get(keyString)
 	if(existing) {
 		console.error("this item already exists in the archive")
