@@ -57,6 +57,7 @@ export default {
 		let result = await fetch(`https://api.nasa.gov/planetary/apod?count=1&api_key=${env.NASA_API_KEY}`);
 		if(!result.ok) {
 			console.log("failed to fetch data")
+			return
 		}
 
 		const json = await result.json() as NasaResponse[]
