@@ -19,7 +19,8 @@ type PhotoDetails = {
 }
 
 const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails): Promise<void> => {
-	const keyString = photoDetails.title + " " + photoDetails.date.toString() + " " + photoDetails.copyright
+	const keyString = JSON.stringify({ title: photoDetails.title, date: photoDetails.date.toString(), copyright: photoDetails.copyright })
+	console.log(keyString)
 	const existing = await store.get(keyString)
 	if(existing) {
 		console.error("this item already exists in the archive")
@@ -32,18 +33,24 @@ const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails):
 
 export default {
 	async fetch(_: Request, env: Env): Promise<Response> {
-		let latestMaybe: string = ""
-		const list = await env.PHOTO_DETAILS.list()
-		list.keys.map(key => {
-			latestMaybe = key.name
+		let count = 0
+		const responseList = await env.PHOTO_DETAILS.list()
+		let mappedKeys: any[] = []
+
+		responseList.keys.map(key => {
+			count++
+			mappedKeys = [...mappedKeys, key.name]
 		});
 
-		const url = await env.PHOTO_DETAILS.get(latestMaybe)
+		const random = Math.floor(Math.random() * count)
+		const url = await env.PHOTO_DETAILS.get(mappedKeys[random])
+		const title = JSON.parse(mappedKeys[random]).title
 
 		const html = `<!DOCTYPE html>
     <body>
-      <h1>Latest Image</h1>
-      <img src="${url}" alt={'possible latest image'}>
+      <h1>Random Image</h1>
+      <h2>${title}</h2>
+      <img src="${url}" alt={'random collected image'}>
     </body>`;
 
 		return new Response(html, {
@@ -94,10 +101,10 @@ export default {
 
 		await savePhotoDetails(env.PHOTO_DETAILS, { title, url, date: new Date(date), copyright })
 
-		const characteristics = openAiResponse.choices[0].message.content!.trim().split(",")
+		const characteristics = openAiResponse.choices[0].message.content!.trim().split(", ")
 
 		characteristics.forEach((characteristic) => {
-			console.log(characteristic)
+			env.D1.prepare("INSERT INTO characteristics (name, title) VALUES (?1, ?2)").bind(characteristic, title).run()
 		})
 
 		console.log(`trigger fired at ${event.cron}`);

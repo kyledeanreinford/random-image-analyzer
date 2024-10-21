@@ -1,0 +1,4 @@
+-- Migration number: 0000 	 2024-10-21T13:53:16.779Z
+
+DROP TABLE IF EXISTS characteristics;
+CREATE TABLE IF NOT EXISTS characteristics (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, title TEXT);

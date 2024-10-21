@@ -11,3 +11,9 @@ enabled = true
 [[kv_namespaces]]
 binding = "PHOTO_DETAILS"
 id = "ca2e0d0c09a44f8b84a9337789922b2a"
+
+[[d1_databases]]
+binding = "D1"
+database_name = "characteristics"
+database_id = "739cc1a0-80a6-4f09-91de-35b39a370f42"
+
