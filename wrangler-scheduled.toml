@@ -1,6 +1,9 @@
-name = "random-image-app"
-main = "src/app.tsx"
+name = "random-image-analyzer"
+main = "src/scheduledWorker.ts"
 compatibility_date = "2024-10-18"
+
+[triggers]
+crons = ["0 * * * *"]
 
 [observability]
 enabled = true
