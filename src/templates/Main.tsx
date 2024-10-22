@@ -4,6 +4,6 @@ export const Main: FC = () => {
 
 
 	return <main>
-		This app analyzes a random photo from NASA to show it's characteristics
+		This app analyzes a random photo from NASA to show its characteristics
 	</main>
 }
