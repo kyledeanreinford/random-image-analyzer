@@ -1,21 +1,13 @@
-import { FC, JSX } from 'hono/jsx';
+import { FC } from 'hono/jsx';
+import { DbTypes } from '../types';
 
-type CharacteristicsResult = {
-	name: string,
-	title: string,
-}
-
-type PhotoResult = {
-	name: string,
-}
-
-type Props = {
+type RandomPhotoProps = {
 	env: Env;
 }
 
-export const RandomPhoto: FC<Props> = async ({ env }) => {
+export const RandomPhoto: FC<RandomPhotoProps> = async ({ env }) => {
 	const photos = await env.PHOTO_DETAILS.list<KVNamespaceListResult<any>>();
-	let mappedKeys: PhotoResult[] = [];
+	let mappedKeys: DbTypes.PhotoResult[] = [];
 
 	photos.keys.map((photo) => {
 		mappedKeys = [...mappedKeys, photo];
@@ -28,7 +20,7 @@ export const RandomPhoto: FC<Props> = async ({ env }) => {
 
 	const url = await env.PHOTO_DETAILS.get(titleKey);
 
-	const characteristics: D1Result<CharacteristicsResult> = await env.D1.prepare('SELECT * FROM characteristics WHERE title = ?1').bind(title).all<CharacteristicsResult>();
+	const characteristics: D1Result<DbTypes.CharacteristicsResult> = await env.D1.prepare('SELECT * FROM characteristics WHERE title = ?1').bind(title).all<DbTypes.CharacteristicsResult>();
 
 	return <main>
 		<img src={url ? url : ''} alt={titleKey} />
