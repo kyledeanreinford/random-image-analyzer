@@ -1,29 +1,8 @@
 import { Hono } from 'hono';
-import type { FC } from 'hono/jsx'
 import { RandomPhoto } from './templates/RandomPhoto';
 import { Main } from './templates/Main';
 import { About } from './templates/About';
-
-const Layout: FC = (props) => {
-	return (
-		<html lang="en">
-		<head>
-			<title>kdr's random photo analyzer</title>
-		</head>
-		<body>
-		<header>
-			<h1>kdr's random photo analyzer</h1>
-			<nav>
-				<li><a href={"/"}>home</a></li>
-				<li><a href={"/random"}>show me a random photo</a></li>
-				<li><a href={"/about"}>about</a></li>
-			</nav>
-		</header>
-		{props.children}
-		</body>
-		</html>
-	)
-}
+import { Layout } from './templates/Layout';
 
 const app = new Hono<{ Bindings: Env }>()
 

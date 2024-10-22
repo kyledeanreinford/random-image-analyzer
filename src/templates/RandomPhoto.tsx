@@ -23,10 +23,12 @@ export const RandomPhoto: FC<RandomPhotoProps> = async ({ env }) => {
 	const characteristics: D1Result<DbTypes.CharacteristicsResult> = await env.D1.prepare('SELECT * FROM characteristics WHERE title = ?1').bind(title).all<DbTypes.CharacteristicsResult>();
 
 	return <main>
+		<h1>{title}</h1>
 		<img src={url ? url : ''} alt={titleKey} />
-		<ul>Characteristics</ul>
-		{characteristics.results.map((result) => {
-			return <li>{result.name}</li>;
-		})}
+		<ul>Characteristics
+			{characteristics.results.map((result) => {
+				return <li>{result.name}</li>;
+			})}
+		</ul>
 	</main>;
 };

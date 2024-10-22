@@ -8,8 +8,6 @@ type MainProps = {
 export const Main: FC<MainProps> = async ({ env }) => {
 	const characteristicsDescending: D1Result<DbTypes.TotalCharacteristics> = await env.D1.prepare("SELECT name, count(*) as count FROM characteristics GROUP BY name ORDER BY count DESC").all<DbTypes.TotalCharacteristics>();
 
-	console.log(characteristicsDescending)
-
 	return <main>
 		This app analyzes a random photo from NASA to show its characteristics
 
