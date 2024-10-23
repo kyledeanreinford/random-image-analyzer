@@ -3,18 +3,18 @@ import { css } from 'hono/css';
 export namespace Theme {
 	export const globalClass = css`
   :-hono-global {
+		html {
+			font-family: Arial, Helvetica, sans-serif;
+		}
 		header {
 			text-align: center;
 		}
 		body {
 			margin: 0;
-			width: 100%;
 		}
-    html {
-      font-family: Arial, Helvetica, sans-serif;
-    }
 		main {
-			padding: 1rem 2rem;
+			max-width: 100rem;
+			margin: 0 auto;
 		}
 		nav {
 			display: flex;
@@ -38,6 +38,9 @@ export namespace Theme {
 			min-width: 100px;
 			padding: 0 1rem;
 		}
+		img {
+			max-width: 50rem;
+		}
   }
 `
 
@@ -59,15 +62,16 @@ export namespace Theme {
 	export const mainContainer = css`
 		display: flex;
 		flex-direction: row;
+		justify-content: space-evenly;
 		gap: 2rem;
-		flex-grow: 1;
 	`;
 
 	export const randomPhotoContainer = css`
-	display: flex;
-	flex-direction: row;
-	gap: 2rem;
-	flex-grow: 1;
-`
+		display: flex;
+		flex-direction: row;
+		justify-content: space-evenly;
+		gap: 2rem;
+
+	`
 
 }
