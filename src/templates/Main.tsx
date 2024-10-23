@@ -8,7 +8,7 @@ type MainProps = {
 }
 
 export const Main: FC<MainProps> = async ({ env }) => {
-	const characteristicsDescending: D1Result<DbTypes.TotalCharacteristics> = await env.D1.prepare('SELECT name, count(*) as count FROM characteristics GROUP BY name ORDER BY count DESC').all<DbTypes.TotalCharacteristics>();
+	const characteristicsDescending: D1Result<DbTypes.TotalCharacteristics> = await env.D1.prepare('SELECT name, count(*) as count FROM characteristics GROUP BY name ORDER BY count DESC LIMIT 20').all<DbTypes.TotalCharacteristics>();
 
 	return <main class={Theme.mainContainer}>
 		<section>
@@ -16,7 +16,7 @@ export const Main: FC<MainProps> = async ({ env }) => {
 			This app analyzes a random photo from NASA to show its characteristics
 		</section>
 		<section>
-			<h3>Total analyzed characteristics</h3>
+			<h3>Top 20 characteristics</h3>
 			<table class={Theme.characteristicsTable}>
 				<thead>
 				<tr>
