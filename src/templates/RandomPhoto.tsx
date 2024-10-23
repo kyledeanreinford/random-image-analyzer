@@ -1,18 +1,11 @@
 import { FC } from 'hono/jsx';
 import { DbTypes } from '../types';
-import { capitalize } from './Main';
-import { css } from 'hono/css';
+import { Theme } from '../styles';
+import { capitalize } from '../helpers';
 
 type RandomPhotoProps = {
 	env: Env;
 }
-
-const randomPhotoContainer = css`
-	display: flex;
-	flex-direction: row;
-	gap: 2rem;
-	flex-grow: 1;
-`
 
 export const RandomPhoto: FC<RandomPhotoProps> = async ({ env }) => {
 	const photos = await env.PHOTO_DETAILS.list<KVNamespaceListResult<any>>();
@@ -31,7 +24,7 @@ export const RandomPhoto: FC<RandomPhotoProps> = async ({ env }) => {
 
 	const characteristics: D1Result<DbTypes.CharacteristicsResult> = await env.D1.prepare('SELECT * FROM characteristics WHERE title = ?1').bind(title).all<DbTypes.CharacteristicsResult>();
 
-	return <main class={randomPhotoContainer}>
+	return <main class={Theme.randomPhotoContainer}>
 		<section>
 			<h3>{title}</h3>
 			<img src={url ? url : ''} alt={titleKey} />
