@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { Chat } from 'openai/resources';
 
 type NasaResponse = {
 	copyright: string,
@@ -34,6 +35,14 @@ const savePhotoDetails = async (store: KVNamespace, photoDetails: PhotoDetails):
 		console.log('successfully added to archive');
 	}
 };
+
+const saveCharacteristics = async (openAiResponse: Chat.ChatCompletion, env: Env, title: string) => {
+	const characteristics = openAiResponse.choices[0].message.content!.trim().split(', ');
+
+	characteristics.forEach((characteristic) => {
+		env.D1.prepare('INSERT INTO characteristics (name, title) VALUES (?1, ?2)').bind(characteristic, title).run();
+	});
+}
 
 export default {
 	async scheduled(event: ScheduledController, env: Env, _: ExecutionContext): Promise<void> {
@@ -80,11 +89,7 @@ export default {
 
 		await savePhotoDetails(env.PHOTO_DETAILS, { title, url, date: new Date(date), copyright });
 
-		const characteristics = openAiResponse.choices[0].message.content!.trim().split(', ');
-
-		characteristics.forEach((characteristic) => {
-			env.D1.prepare('INSERT INTO characteristics (name, title) VALUES (?1, ?2)').bind(characteristic, title).run();
-		});
+		await saveCharacteristics(openAiResponse, env, title);
 
 		console.log(`trigger fired at ${event.cron}`);
 	}
