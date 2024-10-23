@@ -27,6 +27,9 @@ export namespace Theme {
 		a, a:visited {
 			text-decoration: none;
 			color: black;
+			&:hover {
+				color: crimson;
+			}
 		}
 		th {
 			padding: 0 1rem .5rem;
