@@ -19,12 +19,14 @@ jobs:
             - name: 'Deploy app'
               uses: cloudflare/wrangler-action@v3
               with:
+                  version: "3.82.0"
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: deploy
             - name: 'Deploy scheduled handler'
               uses: cloudflare/wrangler-action@v3
               with:
+                  version: "3.82.0"
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   command: deploy --config wrangler-scheduled.toml
