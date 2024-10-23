@@ -3,8 +3,12 @@ import { css, Style } from 'hono/css';
 
 const globalClass = css`
   :-hono-global {
+		header {
+			text-align: center;
+		}
 		body {
 			margin: 0;
+			width: 100%;
 		}
     html {
       font-family: Arial, Helvetica, sans-serif;
@@ -13,18 +17,23 @@ const globalClass = css`
 			padding: 1rem 2rem;
 		}
 		nav {
-			background-color:rgba(0, 0, 0, 0.2);
-			margin: 2rem
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			padding: 1rem;
+			font-size: 1.2rem;
+			margin: 0 2rem
 		}
 		a, a:visited {
 			text-decoration: none;
 			color: black;
 		}
-		ul {
-			list-style: none;
+		th {
+			padding: 0 1rem .5rem;
 		}
-		li {
-			padding: .3rem 1rem;
+		td {
+			min-width: 100px;
+			padding: 0 1rem;
 		}
   }
 `
@@ -50,13 +59,11 @@ export const Layout: FC = (props) => {
 		</head>
 		<body class={globalClass}>
 		<header>
-			<h1 class={headerClass}>kdr's random photo analyzer</h1>
+			<a href={"/"}><h1 class={headerClass}>kdr's random photo analyzer</h1></a>
 			<nav>
-				<ul>
-					<li><a href={"/"}>Home</a></li>
-					<li><a href={"/random"}>Show Me A Random Photo</a></li>
-					<li><a href={"/about"}>About</a></li>
-				</ul>
+					<a href={"/"}>Home</a>
+					<a href={"/random"}>Show Me A Random Photo</a>
+					<a href={"/about"}>About</a>
 			</nav>
 		</header>
 		{props.children}
